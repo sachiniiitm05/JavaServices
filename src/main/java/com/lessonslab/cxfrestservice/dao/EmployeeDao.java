@@ -1,19 +1,24 @@
 package com.lessonslab.cxfrestservice.dao;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.lessonslab.cxfrestservice.model.Employee;
 
 @Component
-//@Configuration
-public class EmployeeDao {
+@Transactional(isolation=Isolation.READ_UNCOMMITTED)
+public class EmployeeDao extends BaseDAOImpl{
 	
 	@Autowired
 	private Properties appProperties;
+	
+	private EmployeeRSExracter employeeRSExracter;
 
 	public Employee getEmployeeDetails(String employeeId) {
 		
@@ -27,4 +32,11 @@ public class EmployeeDao {
 		emp.setLastName("Smith");
 		return emp;
 	}
+	
+	public List<Employee> getEmployeeList(){
+		JdbcTemplate template = this.getJdbcTemplate("US", 1);		
+		return template.query("select * from Empaloyee", employeeRSExracter);
+	}
+	
+	
 }
